@@ -9,12 +9,18 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as ScreeningRouteImport } from './routes/screening'
 import { Route as JobsRouteImport } from './routes/jobs'
 import { Route as CandidatesRouteImport } from './routes/candidates'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as JobsJobIdRouteImport } from './routes/jobs.$jobId'
 
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ScreeningRoute = ScreeningRouteImport.update({
   id: '/screening',
   path: '/screening',
@@ -46,6 +52,7 @@ export interface FileRoutesByFullPath {
   '/candidates': typeof CandidatesRoute
   '/jobs': typeof JobsRouteWithChildren
   '/screening': typeof ScreeningRoute
+  '/settings': typeof SettingsRoute
   '/jobs/$jobId': typeof JobsJobIdRoute
 }
 export interface FileRoutesByTo {
@@ -53,6 +60,7 @@ export interface FileRoutesByTo {
   '/candidates': typeof CandidatesRoute
   '/jobs': typeof JobsRouteWithChildren
   '/screening': typeof ScreeningRoute
+  '/settings': typeof SettingsRoute
   '/jobs/$jobId': typeof JobsJobIdRoute
 }
 export interface FileRoutesById {
@@ -61,14 +69,34 @@ export interface FileRoutesById {
   '/candidates': typeof CandidatesRoute
   '/jobs': typeof JobsRouteWithChildren
   '/screening': typeof ScreeningRoute
+  '/settings': typeof SettingsRoute
   '/jobs/$jobId': typeof JobsJobIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/candidates' | '/jobs' | '/screening' | '/jobs/$jobId'
+  fullPaths:
+    | '/'
+    | '/candidates'
+    | '/jobs'
+    | '/screening'
+    | '/settings'
+    | '/jobs/$jobId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/candidates' | '/jobs' | '/screening' | '/jobs/$jobId'
-  id: '__root__' | '/' | '/candidates' | '/jobs' | '/screening' | '/jobs/$jobId'
+  to:
+    | '/'
+    | '/candidates'
+    | '/jobs'
+    | '/screening'
+    | '/settings'
+    | '/jobs/$jobId'
+  id:
+    | '__root__'
+    | '/'
+    | '/candidates'
+    | '/jobs'
+    | '/screening'
+    | '/settings'
+    | '/jobs/$jobId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -76,10 +104,18 @@ export interface RootRouteChildren {
   CandidatesRoute: typeof CandidatesRoute
   JobsRoute: typeof JobsRouteWithChildren
   ScreeningRoute: typeof ScreeningRoute
+  SettingsRoute: typeof SettingsRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/screening': {
       id: '/screening'
       path: '/screening'
@@ -133,6 +169,7 @@ const rootRouteChildren: RootRouteChildren = {
   CandidatesRoute: CandidatesRoute,
   JobsRoute: JobsRouteWithChildren,
   ScreeningRoute: ScreeningRoute,
+  SettingsRoute: SettingsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
