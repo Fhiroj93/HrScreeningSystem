@@ -22,7 +22,7 @@ export function CandidateTable({ rows, hideJob }: { rows: Candidate[]; hideJob?:
         sort.key === "job" ? JOBS.find((j) => j.id === a.job_id)?.title ?? "" : (a as never)[sort.key] ?? 0;
       const vb: number | string =
         sort.key === "job" ? JOBS.find((j) => j.id === b.job_id)?.title ?? "" : (b as never)[sort.key] ?? 0;
-      const cmp = typeof va === "number" ? (va as number) - (vb as number) : String(va).localeCompare(String(vb));
+      const cmp = typeof va === "number" && typeof vb === "number" ? va - vb : String(va).localeCompare(String(vb));
       return sort.dir === "asc" ? cmp : -cmp;
     });
     return arr;
