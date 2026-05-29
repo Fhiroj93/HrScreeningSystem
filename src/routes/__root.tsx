@@ -79,12 +79,16 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Northbeam — AI Candidate Screening" },
-      { name: "description", content: "AI-powered candidate screening and pipeline management for modern recruiting teams." },
+      { name: "description", content: "AI-powered SaaS platform for recruiters to screen candidates efficiently." },
       { property: "og:title", content: "Northbeam — AI Candidate Screening" },
-      { property: "og:description", content: "AI-powered candidate screening and pipeline management." },
+      { property: "og:description", content: "AI-powered SaaS platform for recruiters to screen candidates efficiently." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "Northbeam — AI Candidate Screening" },
+      { name: "twitter:description", content: "AI-powered SaaS platform for recruiters to screen candidates efficiently." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/0d619db8-b5a3-49e5-908c-7ac0adc5a6e7/id-preview-2ba8509d--b0665f6c-61af-448e-8d21-332d7c1d9255.lovable.app-1780059701184.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/0d619db8-b5a3-49e5-908c-7ac0adc5a6e7/id-preview-2ba8509d--b0665f6c-61af-448e-8d21-332d7c1d9255.lovable.app-1780059701184.png" },
     ],
     links: [
       {
