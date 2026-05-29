@@ -9,6 +9,12 @@ import {
 } from "@tanstack/react-router";
 
 import appCss from "../styles.css?url";
+import { ThemeProvider } from "@/lib/theme";
+import { DrawerProvider } from "@/lib/drawer-store";
+import { AppLayout } from "@/components/app-layout";
+import { CandidateDrawer } from "@/components/candidate-drawer";
+import { OnboardingWizard } from "@/components/onboarding-wizard";
+import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
   return (
@@ -72,11 +78,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "Northbeam — AI Candidate Screening" },
+      { name: "description", content: "AI-powered candidate screening and pipeline management for modern recruiting teams." },
+      { property: "og:title", content: "Northbeam — AI Candidate Screening" },
+      { property: "og:description", content: "AI-powered candidate screening and pipeline management." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
@@ -113,8 +118,16 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      <ThemeProvider>
+        <DrawerProvider>
+          <AppLayout>
+            <Outlet />
+          </AppLayout>
+          <CandidateDrawer />
+          <OnboardingWizard />
+          <Toaster richColors position="top-right" />
+        </DrawerProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }
