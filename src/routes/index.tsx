@@ -12,7 +12,7 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Dashboard — Northbeam" },
+      { title: "Dashboard — Hiring OS" },
       { name: "description", content: "Pipeline overview, top candidates, and live activity." },
     ],
   }),
@@ -41,9 +41,34 @@ function Index() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
-        <p className="text-sm text-muted-foreground">Pipeline health across all open roles.</p>
+      <div className="flex items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Overview</h1>
+          <p className="text-sm text-muted-foreground">Pipeline health across all open roles.</p>
+        </div>
+        <span className="inline-flex items-center gap-2 rounded-full border border-success/25 bg-success/10 px-3 py-1 label-mono text-success">
+          <span className="size-1.5 animate-pulse rounded-full bg-success" /> Live
+        </span>
+      </div>
+
+      <div className="relative overflow-hidden rounded-2xl border border-border bg-card p-8 surface-glow">
+        <div
+          className="pointer-events-none absolute -right-24 -top-24 size-72 rounded-full opacity-25 blur-3xl"
+          style={{ backgroundImage: "linear-gradient(120deg, var(--brand-1), var(--brand-2))" }}
+        />
+        <p className="label-mono text-muted-foreground">Hiring OS · Command center</p>
+        <h2 className="mt-3 max-w-2xl text-4xl font-bold leading-[1.1]">
+          Every applicant, <span className="text-gradient-brand">scored and screened</span> in one control room.
+        </h2>
+        <p className="mt-3 max-w-xl text-sm text-muted-foreground">
+          CV scoring, AI screening chats, and interview scheduling — updating continuously from your live hiring pipeline.
+        </p>
+        <div className="mt-5 flex flex-wrap gap-2">
+          <Chip tone="primary">{CANDIDATES.length} candidates</Chip>
+          <Chip tone="success">{interviews} interviews</Chip>
+          <Chip tone="warning">{screened} screened</Chip>
+          <Chip tone="rose">{CANDIDATES.filter((c) => c.status === "screened_out").length} screened out</Chip>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
@@ -104,12 +129,30 @@ function Index() {
                 cursor={{ fill: "var(--muted)" }}
                 contentStyle={{ background: "var(--popover)", border: "1px solid var(--border)", borderRadius: 8, fontSize: 12 }}
               />
-              <Bar dataKey="value" fill="var(--primary)" radius={[0, 4, 4, 0]} />
+              <defs>
+                <linearGradient id="pipelineFill" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stopColor="var(--brand-1)" />
+                  <stop offset="100%" stopColor="var(--brand-2)" />
+                </linearGradient>
+              </defs>
+              <Bar dataKey="value" fill="url(#pipelineFill)" radius={[0, 4, 4, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
       </Card>
     </div>
+  );
+}
+
+function Chip({ children, tone }: { children: React.ReactNode; tone: "primary" | "success" | "warning" | "rose" }) {
+  const map = {
+    primary: "border-primary/30 bg-primary/10 text-primary",
+    success: "border-success/30 bg-success/10 text-success",
+    warning: "border-warning/30 bg-warning/10 text-warning",
+    rose: "border-rose/30 bg-rose/10 text-rose",
+  } as const;
+  return (
+    <span className={cn("rounded-full border px-3 py-1 text-xs font-medium", map[tone])}>{children}</span>
   );
 }
 
@@ -127,13 +170,15 @@ function StatCard({
   trend: string;
 }) {
   return (
-    <div className="rounded-lg border border-border bg-card p-4">
-      <div className="flex items-center justify-between">
-        <span className="text-xs uppercase tracking-wider text-muted-foreground">{label}</span>
-        <Icon className="size-4 text-muted-foreground" />
+    <div className="rounded-xl border border-border bg-card p-5 transition-colors hover:border-primary/40">
+      <div className="flex items-start justify-between">
+        <span className="label-mono text-muted-foreground">{label}</span>
+        <span className="flex size-9 items-center justify-center rounded-lg bg-primary/12 text-primary ring-1 ring-inset ring-primary/20">
+          <Icon className="size-4" />
+        </span>
       </div>
-      <div className="mt-2 flex items-baseline gap-2">
-        <span className="font-mono text-2xl font-semibold tracking-tight">{value}</span>
+      <div className="mt-3 flex items-baseline gap-2">
+        <span className="font-mono text-3xl font-semibold tracking-tight">{value}</span>
         <span className="text-xs font-medium text-success">{trend}</span>
       </div>
       <div className="mt-0.5 text-xs text-muted-foreground">{sub}</div>
@@ -142,13 +187,13 @@ function StatCard({
 }
 
 function Card({ children, className }: { children: React.ReactNode; className?: string }) {
-  return <div className={cn("rounded-lg border border-border bg-card p-5", className)}>{children}</div>;
+  return <div className={cn("rounded-xl border border-border bg-card p-5", className)}>{children}</div>;
 }
 function CardHeader({ title, subtitle }: { title: string; subtitle: string }) {
   return (
     <div className="mb-4 flex items-baseline justify-between">
       <div>
-        <h3 className="text-sm font-semibold">{title}</h3>
+        <h3 className="label-mono text-foreground">{title}</h3>
         <p className="text-xs text-muted-foreground">{subtitle}</p>
       </div>
     </div>
