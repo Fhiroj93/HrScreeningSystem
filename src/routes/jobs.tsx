@@ -12,7 +12,7 @@ import { EmptyState } from "@/components/empty-state";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/jobs")({
-  head: () => ({ meta: [{ title: "Jobs — Northbeam" }] }),
+  head: () => ({ meta: [{ title: "Jobs — Hiring OS" }] }),
   component: JobsPage,
 });
 

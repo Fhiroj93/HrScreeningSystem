@@ -7,7 +7,7 @@ import { EmptyState } from "@/components/empty-state";
 import { MessagesSquare } from "lucide-react";
 
 export const Route = createFileRoute("/screening")({
-  head: () => ({ meta: [{ title: "Screening — Northbeam" }] }),
+  head: () => ({ meta: [{ title: "Screening — Hiring OS" }] }),
   component: ScreeningPage,
 });
 

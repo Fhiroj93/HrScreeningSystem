@@ -216,10 +216,10 @@ export function candidatesByJob(id: string) {
 }
 
 export const CLIENT = {
-  company_name: "Northbeam Talent",
-  brand_color: "#6366f1",
+  company_name: "Hiring OS",
+  brand_color: "#8b5cf6",
   logo_url: "",
-  calendly_event_url: "https://calendly.com/northbeam/interview",
+  calendly_event_url: "https://calendly.com/hiringos/interview",
   hire_threshold: 70,
   cv_weight: 40,
   chat_weight: 60,

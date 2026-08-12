@@ -10,7 +10,7 @@ import { Upload } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/settings")({
-  head: () => ({ meta: [{ title: "Settings — Northbeam" }] }),
+  head: () => ({ meta: [{ title: "Settings — Hiring OS" }] }),
   component: SettingsPage,
 });
 

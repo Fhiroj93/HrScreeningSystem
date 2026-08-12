@@ -17,6 +17,8 @@ import { useTheme } from "@/lib/theme";
 import { Button } from "@/components/ui/button";
 import { CLIENT } from "@/lib/demo-data";
 
+const LOGO_SRC = "/hiringos-logo.png";
+
 const NAV: { to: string; label: string; icon: typeof LayoutDashboard; exact?: boolean }[] = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { to: "/jobs", label: "Jobs", icon: Briefcase },
@@ -33,19 +35,19 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     <div className="flex min-h-screen w-full bg-background text-foreground">
       {/* Sidebar */}
       <aside className="fixed inset-y-0 left-0 z-30 flex w-60 flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground">
-        <div className="flex h-16 items-center gap-2.5 px-5">
-          <div
-            className="flex size-8 items-center justify-center rounded-md font-semibold text-primary-foreground"
-            style={{ background: "linear-gradient(135deg, var(--primary), oklch(0.72 0.18 295))" }}
-          >
-            N
-          </div>
-          <div className="leading-tight">
-            <div className="text-sm font-semibold">{CLIENT.company_name}</div>
-            <div className="text-[11px] text-muted-foreground">Screening Studio</div>
-          </div>
+        <div className="flex flex-col justify-center border-b border-sidebar-border px-4 py-4">
+          <Link to="/" className="flex w-full flex-col gap-2">
+            <span className="flex w-full items-center justify-center overflow-hidden rounded-lg bg-[oklch(0.09_0.012_290)] p-2 ring-1 ring-inset ring-white/10">
+              <img
+                src={LOGO_SRC}
+                alt={`${CLIENT.company_name} logo`}
+                className="h-auto w-full object-contain"
+              />
+            </span>
+            <span className="label-mono text-center text-muted-foreground">Screening Command Center</span>
+          </Link>
         </div>
-        <nav className="mt-2 flex-1 space-y-0.5 px-3">
+        <nav className="mt-4 flex-1 space-y-1 px-3">
           {NAV.map((n) => {
             const active = n.exact ? path === n.to : path.startsWith(n.to);
             return (
@@ -53,11 +55,16 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 key={n.to}
                 to={n.to as "/"}
                 className={cn(
-                  "flex items-center gap-2.5 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                  "relative flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium transition-all",
                   active
-                    ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                    : "text-sidebar-foreground/75 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground",
+                    ? "text-primary-foreground shadow-[0_10px_30px_-14px_var(--brand-2)]"
+                    : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground",
                 )}
+                style={
+                  active
+                    ? { backgroundImage: "linear-gradient(100deg, var(--brand-1), var(--brand-2))" }
+                    : undefined
+                }
               >
                 <n.icon className="size-4" />
                 {n.label}
@@ -71,7 +78,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           </div>
           <div className="min-w-0 flex-1 leading-tight">
             <div className="truncate text-xs font-medium">Alex Morgan</div>
-            <div className="truncate text-[11px] text-muted-foreground">alex@northbeam.io</div>
+            <div className="truncate text-[11px] text-muted-foreground">alex@hiringos.ai</div>
           </div>
           <button
             className="rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground"
@@ -84,7 +91,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
       {/* Main */}
       <div className="ml-60 flex min-h-screen flex-1 flex-col">
-        <header className="sticky top-0 z-20 flex h-16 items-center gap-3 border-b border-border bg-background/80 px-6 backdrop-blur">
+        <header className="sticky top-0 z-20 flex h-16 items-center gap-3 border-b border-border bg-background/70 px-6 backdrop-blur-xl">
           <div className="relative flex-1 max-w-md">
             <Search className="pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
             <input

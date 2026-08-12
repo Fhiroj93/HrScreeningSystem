@@ -15,7 +15,7 @@ import { useDrawer } from "@/lib/drawer-store";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip } from "recharts";
 
 export const Route = createFileRoute("/jobs/$jobId")({
-  head: () => ({ meta: [{ title: "Job — Northbeam" }] }),
+  head: () => ({ meta: [{ title: "Job — Hiring OS" }] }),
   component: JobDetail,
 });
 

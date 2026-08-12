@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export const Route = createFileRoute("/candidates")({
-  head: () => ({ meta: [{ title: "Candidates — Northbeam" }] }),
+  head: () => ({ meta: [{ title: "Candidates — Hiring OS" }] }),
   component: CandidatesPage,
 });
 
