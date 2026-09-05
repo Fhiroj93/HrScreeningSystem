@@ -1,269 +1,235 @@
-# HR System
+# Hiring OS — AI Candidate Screening Platform
 
-Here's your complete Lovable prompt — copy and paste this entire thing:
+**A white-label SaaS dashboard for recruiters to screen, score, and track candidates end-to-end — CV scoring, AI chat screening, and hiring pipeline, all in one place.**
 
-Build a full-stack AI Candidate Screening Platform dashboard. This is a white-label SaaS product used by recruiters. Use Supabase for auth + database + real-time. Make it production-grade, visually premium, and complete — no placeholder screens. Both dark and white theme options with a just button to switch onntop
+> 🎨 Frontend is complete and fully interactive on demo data. Backend (Supabase auth, database, real-time) is scaffolded for the next phase — see [Roadmap](#-roadmap).
 
-BRAND & VISUAL DIRECTION
+---
 
-Dark theme only. Design language: sharp, data-dense, professional — like Linear meets Greenhouse. Use a deep navy/charcoal base (#0a0f1e background), indigo/violet as primary accent (#6366f1), with emerald for positive signals, rose for rejections, amber for pending. Typography: DM Sans for UI, DM Mono for scores/codes/data. No gradients on backgrounds — reserve gradients for accent highlights only. Every screen must feel complete and "ready to ship."
+## 📖 Overview
 
-AUTH & ONBOARDING
+Hiring OS is a candidate screening platform built for recruiting teams and agencies who want one dashboard to run their entire pipeline — from "job posted" to "interview scheduled" — without stitching together an ATS, a spreadsheet, and a separate AI screening tool.
 
-Supabase Auth — email/password login
+Every candidate gets two scores — a **CV Score** (resume vs. job requirements) and a **Chat Score** (from an AI-driven screening conversation) — which combine into a weighted **Final Score** that recruiters use to decide who moves forward.
 
-On first login, show a one-time Client Setup Wizard (3 steps):
+The product is designed to be **white-labeled**: each client sets their own company name, logo, and brand color during onboarding, and the candidate-facing side (screening chat, booking links) inherits that branding.
 
-Step 1: Company name, logo upload, brand color picker
+---
 
-Step 2: Calendly event URL input, default hire score threshold (slider, default 65)
+## ✨ Features
 
-Step 3: "Create your first job" shortcut or "Go to dashboard"
+### Onboarding
+A one-time 3-step **Client Setup Wizard** on first login: company branding (name, logo, brand color) → Calendly link + default hire-score threshold → shortcut to create the first job or jump straight to the dashboard.
 
-After setup, never show wizard again (store onboarding_complete flag)
+### Dashboard
+- Four top-line stats: total candidates this month, average CV score, screening completion rate, interviews scheduled.
+- **Recent Activity** feed — real-time-style log of candidate events (scored, screened, interview booked) with timestamps.
+- **Top Candidates This Week** — top 5 by final score across all jobs.
+- **Candidate Pipeline by Stage** — a bar chart of counts across Received → Scored → Invited to Screen → Screened → Interview Scheduled → Rejected.
 
-SIDEBAR NAVIGATION
+### Jobs
+- Sortable, paginated table of every job: title, created date, applicant count, average score, scheduled count, open/closed status.
+- **New Job** opens as a right-side drawer (not a modal): title, job description, CV score threshold, and hire threshold (both as sliders).
+- Job Detail page with **Overview / Candidates / Settings** tabs — overview scopes the same pipeline chart and top-5 list to that single job.
 
-Fixed left sidebar, 240px wide. Logo + client brand name at top. Nav items with icons:
+### Candidates
+- Global candidate table across all jobs: name, job applied, CV score, Chat score, Final score (each as a color-coded badge — green ≥70, amber 50–69, rose <50), status pill, applied date.
+- Filter bar: search by name/email, filter by job, multi-select status filter, score-range slider, and **Export CSV** on the filtered view.
+- **Candidate Detail Drawer** (slides in from the right, doesn't navigate away) with four tabs:
+  - **Profile** — parsed resume: skills, experience, education, total years, employment gaps, red flags.
+  - **Screening Chat** — the full AI ↔ candidate transcript, rendered as a real chat UI.
+  - **Evaluation** — side-by-side CV Evaluation and Chat Evaluation cards (matched/unmet requirements, strengths, concerns, communication quality, motivation signal), plus the final-score formula: `CV (40%) + Chat (60%) = Final Score`.
+  - **Timeline** — a vertical log of every status change with timestamp.
 
-Dashboard (home/overview)
+### Screening
+Live view of everyone currently in or through screening, split into **In Progress** / **Completed** tabs — job, chat start time, message count, status. Clicking a row opens the Candidate Detail Drawer pre-scrolled to the Screening Chat tab.
 
-Jobs (all open roles)
+### Settings
+- **Branding** — logo upload with live preview, company name, brand color picker, and a preview card of the candidate-facing portal.
+- **Integrations** — Calendly event URL (with a "Test Link" action), Resend API key (masked, with "Test Email"), n8n webhook base URL — each with a Connected / Not Configured status badge.
+- **Scoring** — default CV and hire thresholds, and linked CV-weight/Chat-weight sliders that always sum to 100%.
 
-Candidates (global across all jobs)
+### Design details
+- Dark and light themes, switchable via a single toggle.
+- Loading skeletons (not spinners) on every data-fetch state.
+- Designed empty states for every table/list, not blank screens.
+- Toast notifications for new candidates, completed screenings, and scheduled interviews.
+- Every score rendered as `XX / 100` with a thin progress bar underneath.
+- Optimized for desktop (min width 1280px) — this is a recruiter workstation tool, not a mobile app.
 
-Screening (chat transcripts)
+---
 
-Settings
+## 🏗️ Architecture
 
-Bottom of sidebar: user avatar, email, logout button.
+### Planned system architecture
 
-SCREEN 1 — DASHBOARD (Home)
+```mermaid
+flowchart LR
+    CAND[Candidate applies] --> INTAKE[Resume intake]
+    INTAKE --> CVAI[AI CV Scoring]
+    CVAI --> DB[(Supabase\nPostgres + Auth + Realtime)]
 
-Top stat bar with 4 cards:
+    DB --> APP[Hiring OS Dashboard]
 
-Total Candidates (this month)
+    APP -->|invite to screen| CHATBOT[AI Screening Chat]
+    CHATBOT --> CHATAI[AI Chat Scoring]
+    CHATAI --> DB
 
-Avg CV Score (across all active jobs)
-
-Screening Completion Rate (%)
-
-Interviews Scheduled (this month)
-
-Below stats: two columns:
-
-Left: "Recent Activity" feed — real-time list of latest candidate events (e.g. "Priya S. scored 78 on Frontend Engineer", "Rahul M. completed screening", "Tom K. interview scheduled") with timestamps and colored status dots
-
-Right: "Top Candidates This Week" — top 5 by final_score across all jobs, with name, job title, score badge, and a "View" button
-
-Below: a horizontal bar chart — "Candidate Pipeline by Stage" — showing counts per status: Received / Scored / Invited to Screen / Screened / Interview Scheduled / Rejected. Use Recharts.
-
-SCREEN 2 — JOBS
-
-Table view of all jobs. Columns: Job Title, Date Created, # Applicants, Avg Score, # Scheduled, Status (Open/Closed), Actions.
-
-Top-right: "+ New Job" button → opens a right-side drawer (not a modal) with:
-
-Job title input
-
-Job Description textarea (large, with character count)
-
-Score threshold slider (0–100, default 65)
-
-Hire threshold slider (0–100, default 70)
-
-"Create Job" button → saves to Supabase jobs table
-
-Each job row is clickable → navigates to Job Detail page
-
-Job Detail Page:
-
-Header: job title, created date, status toggle (Open/Closed), Edit button
-
-Tab bar: Overview | Candidates | Settings
-
-Overview tab: same pipeline bar chart scoped to this job + top 5 candidates
-
-Candidates tab: (see Candidates screen, filtered to this job)
-
-Settings tab: edit JD, thresholds, Calendly URL override for this job
-
-SCREEN 3 — CANDIDATES
-
-Full candidate table with these columns:
-
-Name
-
-Job Applied
-
-CV Score (colored badge: green ≥70, amber 50–69, rose <50)
-
-Chat Score (same coloring, shows "—" if not yet screened)
-
-Final Score (bold, same coloring)
-
-Status (pill badge with color: Received / Scored / Screening Invited / Screening Complete / Interview Scheduled / Rejected / Screened Out)
-
-Applied Date
-
-Actions: "View" button
-
-Filtering bar above table:
-
-Search by name or email
-
-Filter by Job (dropdown)
-
-Filter by Status (multi-select dropdown)
-
-Filter by Score range (slider: 0–100)
-
-"Export CSV" button — exports visible filtered results
-
-Candidate Detail Drawer (slides in from right, don't navigate away):
-
-Header: name, email, applied job, final score badge, status pill
-
-Tabs: Profile | Screening Chat | Evaluation | Timeline
-
-Profile tab: parsed resume data — skills (tags), experience list (company, title, dates, summary), education, total years, employment gaps, red flags
-
-Screening Chat tab: full chat transcript rendered as a real chat UI (candidate messages left, AI messages right, timestamps)
-
-Evaluation tab: two side-by-side cards — CV Evaluation (cv_score, matched requirements, unmet requirements, strengths, concerns) and Chat Evaluation (chat_score, communication quality, answer depth, motivation signal, hire signal, recruiter note). At bottom: final score calculation shown as a formula: CV (weight 40%) + Chat (weight 60%) = Final Score
-
-Timeline tab: vertical event log — every status change with timestamp and description
-
-SCREEN 4 — SCREENING
-
-List of all candidates currently in or completed screening (status = screening_invited / screening_complete).
-
-Two tabs: In Progress | Completed
-
-Each row shows: name, job, chat started time, # messages exchanged, status
-
-Clicking a row opens the same Candidate Detail Drawer (pre-opened on Screening Chat tab).
-
-SCREEN 5 — SETTINGS
-
-Three sub-sections (tab nav within page):
-
-Branding:
-
-Logo upload (preview shown live)
-
-Company name
-
-Brand color picker
-
-Preview card showing how the candidate-facing portal will look
-
-Integrations:
-
-Calendly Event URL input + "Test Link" button
-
-Resend API Key input (masked) + "Test Email" button with status indicator
-
-n8n Webhook Base URL input (masked)
-
-Each integration shows a green "Connected" or red "Not configured" status badge
-
-Scoring:
-
-Default CV score threshold (slider + number input)
-
-Default hire threshold (slider + number input)
-
-CV weight % and Chat weight % (two sliders that must sum to 100, linked)
-
-Save button
-
-REAL-TIME BEHAVIOR
-
-Use Supabase Realtime subscriptions on the candidates table. When a candidate's status or score changes:
-
-Dashboard activity feed updates instantly (no refresh)
-
-Candidate table row updates in place
-
-Status pill animates (brief pulse effect)
-
-Dashboard stat cards update counts
-
-SUPABASE SCHEMA
-
-Create these tables exactly:
-
-clients: id (uuid PK), company_name (text), brand_color (text), logo_url (text), calendly_event_url (text), hire_threshold (int default 65), onboarding_complete (bool default false), created_at (timestamptz)
-
-jobs: id (uuid PK), client_id (uuid FK), title (text), jd_text (text), jd_summary (text), score_threshold (int), hire_threshold (int), status (text default 'open'), created_at (timestamptz)
-
-candidates: id (uuid PK), job_id (uuid FK), token (uuid), name (text), email (text), resume_url (text), parsed_data (jsonb), cv_score (int), cv_reasoning (jsonb), chat_transcript (jsonb), chat_score (int), chat_evaluation (jsonb), final_score (int), status (text), calendly_link (text), created_at (timestamptz)
-
-Enable Row Level Security on all tables. Policy: users can only access rows where client_id matches their auth.uid().
-
-EMPTY STATES
-
-Every table/list must have a designed empty state (not a blank screen):
-
-Jobs empty: icon + "No jobs yet. Create your first role to start screening candidates." + CTA button
-
-Candidates empty: icon + "No candidates yet. Share your job link to start receiving applications."
-
-Activity feed empty: "All quiet — candidates will appear here as they apply."
-
-NOTIFICATIONS (in-app)
-
-Toast notifications (top-right, auto-dismiss 4s) for:
-
-New candidate received
-
-Candidate completed screening
-
-Interview scheduled
-
-ADDITIONAL REQUIREMENTS
-
-All tables must be sortable by clicking column headers
-
-Pagination on all tables (25 rows per page)
-
-Responsive down to 1280px width minimum (this is a desktop app, not mobile)
-
-All drawers must close on ESC key and clicking outside
-
-Use Recharts for all charts
-
-Use Shadcn/ui as component base
-
-No mock data hardcoded — all data from Supabase
-
-Loading skeletons (not spinners) for all data-fetch states
-
-All scores displayed as XX / 100 format with a thin progress bar underneath
-
-----------
-ignore the complete backend, dont implement it now , just focus on the complete frontend with demo data without missing anything memtioned, it hsould b ein both dark and whie theme, high professional
-
-This project was built with [Lovable](https://lovable.dev).
-
-**Live app**: https://screening-shine-app.lovable.app
-
-## Build with Lovable
-
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/b0665f6c-61af-448e-8d21-332d7c1d9255).
-
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
-
-## Development
-
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
-
-```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
-npm run dev
+    DB -->|final_score ready| APP
+    APP -->|hire signal| CALENDLY[Calendly Booking]
+    APP -->|notifications| N8N[n8n Webhooks]
+    APP -->|emails| RESEND[Resend API]
 ```
+
+*CV scoring, chat screening, and the Supabase backend are the next build phase. The current repo ships the complete frontend against realistic demo data, so the UI/UX is fully clickable and ready to wire up.*
+
+### Frontend architecture
+
+```mermaid
+flowchart TD
+    ROOT["__root.tsx — HTML shell, meta tags, error boundary"]
+    ROUTER["TanStack Router (routeTree.gen.ts)"]
+    LAYOUT["components/app-layout.tsx — sidebar + theme"]
+
+    ROOT --> ROUTER
+    ROUTER --> IDX["routes/index.tsx — Dashboard"]
+    ROUTER --> JOBS["routes/jobs.tsx — Jobs table"]
+    ROUTER --> JOBID["routes/jobs.$jobId.tsx — Job detail"]
+    ROUTER --> CANDS["routes/candidates.tsx — Candidates table"]
+    ROUTER --> SCREEN["routes/screening.tsx — Screening queue"]
+    ROUTER --> SET["routes/settings.tsx — Settings"]
+
+    IDX & JOBS & JOBID & CANDS & SCREEN & SET --> LAYOUT
+    CANDS --> DRAWER["components/candidate-drawer.tsx"]
+    SCREEN --> DRAWER
+    LAYOUT --> WIZARD["components/onboarding-wizard.tsx"]
+
+    IDX & JOBS & CANDS & SCREEN --> DEMO["lib/demo-data.ts"]
+```
+
+The app is built on **TanStack Start** (React 19 + TanStack Router) with file-based routing. `app-layout.tsx` provides the persistent sidebar and theme context around every route; `candidate-drawer.tsx` and `onboarding-wizard.tsx` are shared overlays used across multiple pages. All data currently comes from `lib/demo-data.ts` — typed to match the exact shape the eventual Supabase schema will use (see below), so swapping demo data for live queries won't require touching the UI layer.
+
+### Planned data model
+
+```
+clients        id, company_name, brand_color, logo_url, calendly_event_url,
+               hire_threshold, onboarding_complete, created_at
+
+jobs           id, client_id (FK), title, jd_text, jd_summary,
+               score_threshold, hire_threshold, status, created_at
+
+candidates     id, job_id (FK), token, name, email, resume_url, parsed_data (jsonb),
+               cv_score, cv_reasoning (jsonb), chat_transcript (jsonb), chat_score,
+               chat_evaluation (jsonb), final_score, status, calendly_link, created_at
+```
+Row Level Security scoped so a client can only ever see rows where `client_id` matches their authenticated user.
+
+---
+
+## 🛠️ Tech Stack
+
+**Framework & Routing**
+- [TanStack Start](https://tanstack.com/start) (React 19) — full-stack React framework with SSR
+- [TanStack Router](https://tanstack.com/router) — type-safe, file-based routing
+- [TanStack Query](https://tanstack.com/query) — data fetching & caching
+
+**UI**
+- [shadcn/ui](https://ui.shadcn.com/) + [Radix UI](https://www.radix-ui.com/) primitives
+- [Tailwind CSS v4](https://tailwindcss.com/)
+- [Recharts](https://recharts.org/) — pipeline & stat charts
+- [Lucide React](https://lucide.dev/) — icons
+- [Sonner](https://sonner.emilkowal.ski/) — toast notifications
+- [Vaul](https://vaul.emilkowal.ski/) — drawers (candidate detail, new job)
+
+**Forms & Utilities**
+- React Hook Form + Zod — form state & validation
+- date-fns — date handling
+
+**Planned Backend** *(not yet wired in this repo)*
+- [Supabase](https://supabase.com/) — Auth, Postgres, Row Level Security, Realtime subscriptions
+- [Calendly](https://calendly.com/) — interview booking
+- [Resend](https://resend.com/) — transactional email
+- [n8n](https://n8n.io/) — automation webhooks
+
+**Build & Tooling**
+- Vite 7 · TypeScript · ESLint · Prettier · Bun (package manager)
+
+---
+
+## 📂 Project Structure
+
+```
+HrScreeningSystem-main/
+├── public/
+│   ├── favicon.png
+│   └── hiringos-logo.png
+├── src/
+│   ├── components/
+│   │   ├── app-layout.tsx          # sidebar + theme shell
+│   │   ├── candidate-drawer.tsx    # candidate detail (4 tabs)
+│   │   ├── candidate-table.tsx
+│   │   ├── onboarding-wizard.tsx   # 3-step first-login setup
+│   │   ├── score-display.tsx       # XX/100 + progress bar
+│   │   ├── status-pill.tsx
+│   │   ├── empty-state.tsx
+│   │   └── ui/                     # shadcn/ui component library
+│   ├── lib/
+│   │   ├── demo-data.ts            # typed demo dataset (matches planned schema)
+│   │   ├── drawer-store.tsx
+│   │   ├── theme.tsx
+│   │   └── utils.ts
+│   ├── routes/
+│   │   ├── __root.tsx
+│   │   ├── index.tsx               # Dashboard
+│   │   ├── jobs.tsx                 # Jobs table
+│   │   ├── jobs.$jobId.tsx          # Job detail
+│   │   ├── candidates.tsx           # Candidates table
+│   │   ├── screening.tsx            # Screening queue
+│   │   └── settings.tsx
+│   ├── router.tsx
+│   └── server.ts
+├── vite.config.ts
+├── package.json
+└── README.md
+```
+
+---
+
+## 🚀 Getting Started
+
+**Prerequisites:** [Bun](https://bun.sh/) (or Node.js + your package manager of choice)
+
+```bash
+# Install dependencies
+bun install
+
+# Start the dev server
+bun run dev
+
+# Build for production
+bun run build
+
+# Preview the production build locally
+bun run preview
+```
+
+The dev server runs at `http://localhost:3000` by default.
+
+---
+
+## 🗺️ Roadmap
+
+- [ ] Wire up Supabase (Auth, Postgres schema, Row Level Security)
+- [ ] Supabase Realtime subscriptions on `candidates` for live dashboard/table updates
+- [ ] Resume parsing + AI CV scoring pipeline
+- [ ] AI screening chat + chat scoring pipeline
+- [ ] Calendly and Resend integrations (currently UI-only in Settings)
+- [ ] n8n webhook wiring for automation triggers
+
+---
+
+## 👤 Author
+
+Built by **Fhiroj Shaik** — Founder, MOFI AI. I build AI agents, voice AI systems, and n8n-powered automation for real businesses.
+
+🔗 **LinkedIn:** [linkedin.com/in/fhiroj-shaik-020760355](https://www.linkedin.com/in/fhiroj-shaik-020760355/)
