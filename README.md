@@ -2,8 +2,6 @@
 
 **A white-label SaaS dashboard for recruiters to screen, score, and track candidates end-to-end — CV scoring, AI chat screening, and hiring pipeline, all in one place.**
 
-> 🎨 Frontend is complete and fully interactive on demo data. Backend (Supabase auth, database, real-time) is scaffolded for the next phase — see [Roadmap](#-roadmap).
-
 ---
 
 ## 📖 Overview
